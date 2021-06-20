@@ -33,7 +33,7 @@ namespace APSystem.API
              ConfigureFormOptions.ConfigureService(services);
              ConfigureFordwardHeaderOptions.ConfigureService(services);
              SwaggerConfiguration.ConfigureService(services);
-              ServiceRegisterationConfiguration.ConfigureService(services,Configuration);
+             ServiceRegisterationConfiguration.ConfigureService(services,Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,11 +47,11 @@ namespace APSystem.API
                 app.UseHsts();
             }
             //Swagger Configuration
-           // SwaggerConfiguration.Configure(app);
+            SwaggerConfiguration.Configure(app);
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors("CorsPolicy");
-            //MiddlewareConfiguration.Configure(app);
+            MiddlewareConfiguration.Configure(app);
             app.UseAuthentication();
             app.UseAuthorization();
 

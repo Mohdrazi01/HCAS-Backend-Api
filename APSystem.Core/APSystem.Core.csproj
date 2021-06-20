@@ -5,11 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+   <PackageReference Include="FluentValidation.AspNetCore" Version="9.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameWorkCore.SqlServer" Version="5.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\APSystem.Configuration\APSystem.Configuration.csproj" />
+    <ProjectReference Include="..\APSystem.Services\APSystem.Services.csproj" />
+    <ProjectReference Include="..\APSystem.Models\APSystem.Models.csproj" />
   </ItemGroup>
 
 </Project>
