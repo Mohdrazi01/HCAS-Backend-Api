@@ -28,7 +28,7 @@ public class AuthorizationMiddleware
 
         public async Task Invoke(HttpContext httpContext, IAuthService authService, IMetaDataService metaDataService)
         {
-            if (!_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/Auth") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/po-approval") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/update-po-status") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/update-invoice-status") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/invoice-approval") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/delegate-Invoice-approval") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/delegate-creditNote-approval") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/update-creditNote-status") && !_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/invoice/creditNote-approval"))
+            if (!_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/Auth") )
             {
 
                 var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -80,7 +80,6 @@ public class AuthorizationMiddleware
                 var isRFQRequired = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsRFQRequired").Value);
                 AuthResponse authorizationResult = new AuthResponse()
                 {
-                   
                     Email = Email,
                     UserId = userId,
                     UserName = userName,

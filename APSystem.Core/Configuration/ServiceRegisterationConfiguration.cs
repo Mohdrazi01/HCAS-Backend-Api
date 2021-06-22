@@ -18,8 +18,8 @@ namespace APSystem.Core.Configuration
         {
               #region  DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<Microsoft.AspNetCore.Identity.UserManager<IdentityUser>>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+           // services.AddScoped<Microsoft.AspNetCore.Identity.UserManager<IdentityUser>>();
+           // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
            // services.AddScoped(typeof(IAuthRepository), typeof(AuthRepository));
             services.AddScoped(typeof(IAuthService), typeof(AuthService));
            // services.AddScoped(typeof(IMasterDataService), typeof(MasterDataService));
