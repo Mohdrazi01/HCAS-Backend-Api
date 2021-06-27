@@ -15,25 +15,25 @@ namespace APSystem.API
 {
     public class Startup
     {
+        public IConfiguration _configuration { get;}
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-        public IConfiguration Configuration { get;}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddControllers()
-             .AddNewtonsoftJson(options=>options.SerializerSettings.ContractResolver= new CamelCasePropertyNamesContractResolver());
+             .AddNewtonsoftJson(options=>options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
              services.AddApplicationInsightsTelemetry();
-             ConfigurationOptions.ConfigureService(services,Configuration);
+             ConfigurationOptions.ConfigureService(services,_configuration);
              ConfigurationCorsOptions.ConfigureService(services);
              ConfigureFormOptions.ConfigureService(services);
              ConfigureFordwardHeaderOptions.ConfigureService(services);
              SwaggerConfiguration.ConfigureService(services);
-             ServiceRegisterationConfiguration.ConfigureService(services,Configuration);
+             ServiceRegisterationConfiguration.ConfigureService(services,_configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

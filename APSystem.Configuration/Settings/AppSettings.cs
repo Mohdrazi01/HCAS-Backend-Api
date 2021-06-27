@@ -12,5 +12,6 @@ namespace APSystem.Configuration.Settings
        /// </summary>
        /// <value></value>
         public int DbTimeOut { get; set; }
+        public string BaseUrl { get; set; }
     }
 }

@@ -9,7 +9,5 @@ namespace APSystem.Configuration.Settings
         /// </summary>
         /// <value></value>
       public string SecretKey { get; set; }
-      
-      
     }
 }

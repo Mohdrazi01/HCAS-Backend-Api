@@ -32,5 +32,8 @@ namespace APSystem.Models.Enums
         [EnumMember(Value = "Old Password can not be blank.")]
         [Description("Old Password can not be blank.")]
         E6008,
+        [EnumMember(Value = "User name is already exists.")]
+        [Description("User name is already exists.")]
+        E6009
     }
 }

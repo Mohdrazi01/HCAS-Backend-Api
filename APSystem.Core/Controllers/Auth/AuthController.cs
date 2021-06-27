@@ -1,3 +1,5 @@
+
+using System.Threading.Tasks;
 using APSystem.Models.Auth;
 using APSystem.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +17,19 @@ namespace APSystem.Core.Controllers.Auth
             _authService = authService;
         }
         [HttpPost]
-        [Route("login")]
-        public ActionResult<AuthResponse> Login([FromBody] AuthRequest request)
+        [Route("signup")]
+        public async Task<ActionResult<RegisterUserResponse>> RegisterUser([FromBody] RegisterUserRequest request)
         {
-           //_Logger.LogInformation($"Login Request:-{JsonConvert.SerializeObject(request)}");
-            var response = _authService.Login(request);
+            var response =await _authService.RegisterUser(request);
             return Ok(response);
         }
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request)
+        {
+            var response =await _authService.Login(request);
+            return Ok(response);
+        }
+
     }
 }
