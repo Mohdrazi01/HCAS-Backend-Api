@@ -26,14 +26,12 @@ namespace APSystem.Data.Contexts
         public DbSet<AppointmentTypeDbEntity> AppointmentType { get; set; }
         public DbSet<ApSlotsDbEntity> ApSlots { get; set; }
         public DbSet<BookingsDbEntity> Bookings { get; set; }
-        public DbSet<DoctorDbEntity> Doctors { get; set; }
-        public DbSet<PatientDbEntity> Patients { get; set; }
+        public DbSet<UsersDbEntity> ApUsers { get; set; }
         public DbSet<RoleDbEntity> ApRoles { get; set; }
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             CheckBeforeSaving();
             return (await base.SaveChangesAsync(true,cancellationToken).ConfigureAwait(false));
-            
 
         }
         private void CheckBeforeSaving()
@@ -53,7 +51,6 @@ namespace APSystem.Data.Contexts
                     entityEntry.Property("CreatedBy").IsModified = false;
                     entityEntry.Property("CreatedDate").IsModified = false;
                     //entityEntry.Property("IsActive").IsModified = false;
-                    
                 }
                 if (entityEntry.State == EntityState.Added)
                 {

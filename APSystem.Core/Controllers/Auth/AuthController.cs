@@ -27,7 +27,7 @@ namespace APSystem.Core.Controllers.Auth
         [Route("login")]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request)
         {
-            var response =await _authService.Login(request);
+            var response = await _authService.Login(request);
             return Ok(response);
         }
 

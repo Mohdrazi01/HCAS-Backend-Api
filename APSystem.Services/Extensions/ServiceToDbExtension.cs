@@ -5,49 +5,27 @@ namespace APSystem.Services.Extensions
 {
     public static class ServiceToDbExtension
     {
-        public static PatientDbEntity ToPatientUserService(this RegisterUserRequest request)
+        public static UsersDbEntity ToUserService(this RegisterUserRequest request)
         {
             if (request == null)
-                return new PatientDbEntity();
-            PatientDbEntity patient = new PatientDbEntity
+                return new UsersDbEntity();
+           UsersDbEntity Users = new UsersDbEntity
             {
                 UserName = request.Email,
                 Name = request.Name,
-                RoleID = 1,
+                RoleID = request.RoleID,
                 Email = request.Email,
                 Password = request.Password,
                 PhoneNumber = request.PhoneNumber,
                 DateOfBirth = request.DateOfBirth,
                 Gender = request.Gender,
+                GMCNumber = request.GMCNumber,
+                Speciality = request.Speciality,
+                Experience = request.Experience,
                 Address = request.Address
             };
-            return patient;
-
-
+            return Users;
         }
 
-
-        public static DoctorDbEntity ToDoctorUserService(this RegisterUserRequest request)
-        {
-            if (request == null)
-                return new DoctorDbEntity();
-            DoctorDbEntity doctor= new DoctorDbEntity
-            {
-                UserName = request.Email,
-                Name = request.Name,
-                RoleID = 2,
-                Email = request.Email,
-                Password = request.Password,
-                PhoneNumber = request.PhoneNumber,
-                DateOfBirth = request.DateOfBirth,
-                Gender = request.Gender,
-                Address = request.Address
-            };
-            return doctor;
-
-
-        }
-
-        
     }
 }

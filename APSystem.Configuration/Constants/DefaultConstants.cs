@@ -13,6 +13,5 @@ namespace APSystem.Configuration.Constants
          public const string AppSettings = nameof(DefaultConstants.AppSettings);
          public const string EmailSettings = nameof(DefaultConstants.EmailSettings);
          public const string JwtSettings = nameof(DefaultConstants.JwtSettings);
-         
     }
 }

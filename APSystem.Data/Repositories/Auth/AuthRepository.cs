@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APSystem.Data.Contexts;
 using APSystem.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace APSystem.Data.Repositories.Auth
 {
@@ -13,26 +14,22 @@ namespace APSystem.Data.Repositories.Auth
         {
             _dbContext = dbContext;
         }
-        async Task<DoctorDbEntity> IAuthRepository.CreateDoctorUser(DoctorDbEntity doctorDbEntity)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        async Task<PatientDbEntity> IAuthRepository.CreatePatientUser(PatientDbEntity patientDbEntity)
+        async Task<UsersDbEntity> IAuthRepository.CreateUser(UsersDbEntity usersDbEntity)
         {
             try
             {
-                if (!_dbContext.Patients.Any(x => x.UserName == patientDbEntity.UserName))
+                if (!_dbContext.ApUsers.Any(x => x.UserName == usersDbEntity.UserName))
                 {
-                    patientDbEntity.IsUserNameExist = false;
-                    patientDbEntity.EmailActivationCode = Guid.NewGuid();
-                    _dbContext.Patients.Add(patientDbEntity);
+                    usersDbEntity.IsUserNameExist = false;
+                    usersDbEntity.EmailActivationCode = Guid.NewGuid();
+                    _dbContext.ApUsers.Add(usersDbEntity);
                     await _dbContext.SaveChangesAsync();
-                    patientDbEntity.IsUserCreated = true;
+                    usersDbEntity.IsUserCreated = true;
                 }
                 else
                 {
-                    patientDbEntity.IsUserNameExist = true;
+                    usersDbEntity.IsUserNameExist = true;
                 }
             }
             catch (System.Exception ex)
@@ -41,27 +38,22 @@ namespace APSystem.Data.Repositories.Auth
             }
 
 
-            return patientDbEntity;
+            return usersDbEntity;
         }
 
-        async Task<bool> IAuthRepository.DoctorEmailConfirmation(string activationCode)
+        async Task<UsersDbEntity> IAuthRepository.GetUser(int UserID)
         {
             throw new System.NotImplementedException();
         }
 
-        async Task<DoctorDbEntity> IAuthRepository.GetDoctorUser(int doctorUserID)
+        async Task<bool> IAuthRepository.UsersEmailConfirmation(string activationCode)
         {
             throw new System.NotImplementedException();
         }
-
-        async Task<PatientDbEntity> IAuthRepository.GetPatientUser(int patientUserID)
+        async Task<UsersDbEntity> IAuthRepository.GetUser(string userName)
         {
-            throw new System.NotImplementedException();
-        }
-
-        async Task<bool> IAuthRepository.PatientEmailConfirmation(string activationCode)
-        {
-            throw new System.NotImplementedException();
+           var usersDbEntity = await _dbContext.ApUsers.FirstOrDefaultAsync(x => x.UserName == userName);
+           return usersDbEntity;
         }
 
         // async Task<long> IAuthRepository.SaveDoctorLoginHistory(DoctorLoginHistoryDbEntity doctorLoginHistoryDbEntity)

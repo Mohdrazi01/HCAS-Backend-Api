@@ -45,9 +45,9 @@ namespace APSystem.Services.Email
             {
                 try
                 {
-                    await client.ConnectAsync(_emailSettings.Value.MailServer, _emailSettings.Value.MailPort, SecureSocketOptions.StartTls);
+                    await client.ConnectAsync(_emailSettings.Value.MailServer, _emailSettings.Value.MailPort, SecureSocketOptions.Auto);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    await client.AuthenticateAsync(_emailSettings.Value.SenderName, _emailSettings.Value.Password);
+                    await client.AuthenticateAsync(_emailSettings.Value.Sender, _emailSettings.Value.Password);
                     await client.SendAsync(mailMessage);
                 }
                 catch (Exception ex)

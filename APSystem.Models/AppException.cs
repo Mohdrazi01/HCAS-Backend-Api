@@ -21,7 +21,7 @@ public class AppException : Exception
             ErrorCode = code.ToString();
             ErrorDescription = code.GetEnumDescriptionAttrValue();
         }
-          }
+        }
 
     public static class Extension
     {

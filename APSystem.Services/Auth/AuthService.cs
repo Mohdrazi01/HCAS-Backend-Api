@@ -1,4 +1,7 @@
+using System.Security.Claims;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace APSystem.Services.Auth
 {
@@ -26,13 +30,13 @@ namespace APSystem.Services.Auth
         private readonly IEmailService _emailService;
         IOptions<JwtSettings> _jwtSettings;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public AuthService(IOptions<AppSettings> appSettings 
-        ,IWebHostEnvironment hostingEnvironment
-        ,IOptions<JwtSettings> jwtSettings
-        ,IEmailService emailService
+        public AuthService(IOptions<AppSettings> appSettings
+        , IWebHostEnvironment hostingEnvironment
+        , IOptions<JwtSettings> jwtSettings
+        , IEmailService emailService
         //,IUserRepository userRepo
         //,IHttpContextAccessor accessor
-        ,IAuthRepository authRepository
+        , IAuthRepository authRepository
         , IMetaDataService metaDataService
         , ILogger<AuthService> logger) : base(metaDataService, logger)
         {
@@ -48,21 +52,63 @@ namespace APSystem.Services.Auth
 
         async Task<AuthResponse> IAuthService.Login(AuthRequest request)
         {
-            return await Task.FromResult(new AuthResponse());
+            AuthResponse authResponse = new AuthResponse();
+            var user = await _authRepository.GetUser(request.UserName);
+            if (user == null || user.IsActive == false)
+                throw new UnauthorizedAccessException();
+            if (user.IsEmailConfirmed == false)
+                throw new AppException(Models.Enums.AuthCodes.E6009);
+            var hasher = new PasswordHasher<UsersDbEntity>();
+          var verifyPassword = hasher.VerifyHashedPassword(user, user.Password, request.Password);
+            if (verifyPassword == PasswordVerificationResult.Failed)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            var token = GenerateJwtToken(user);
+            authResponse.UserId = user.UserID;
+            authResponse.UserName = user.UserName;
+            authResponse.RoleId = user.RoleID;
+            authResponse.Access_Token = token;
+            authResponse.IsActive = user.IsActive;
+            authResponse.IsEmailConfirmed = user.IsEmailConfirmed;
+            return await Task.FromResult(authResponse);
+        }
+
+        private string GenerateJwtToken(UsersDbEntity user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Value.SecretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new System.Security.Claims.ClaimsIdentity(new[]{
+                new Claim("Id",user.UserID.ToString()),
+                 new Claim("UserName",user.UserName.ToString()),
+                  new Claim("Email",user.Email.ToString()),
+                   new Claim("RoleID",user.RoleID.ToString()),
+                    new Claim("IsActive",user.IsActive.ToString()),
+                     new Claim("Name",user.Name.ToString()),
+                       new Claim("IsEmailConfirmed",user.IsEmailConfirmed.ToString()),
+                         new Claim("EmailActivationCode",user.EmailActivationCode.ToString()),
+            }),
+            Expires = DateTime.UtcNow.AddDays(1),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),SecurityAlgorithms.HmacSha256Signature)
+            };
+              var token = tokenHandler.CreateToken(tokenDescriptor);
+              return tokenHandler.WriteToken(token);
         }
 
         async Task<RegisterUserResponse> IAuthService.RegisterUser(RegisterUserRequest request)
         {
             RegisterUserResponse registerUserResponse = new RegisterUserResponse();
-            var patientDbEntity = request.ToPatientUserService();
-            var hasher = new PasswordHasher<PatientDbEntity>();
+            var patientDbEntity = request.ToUserService();
+            var hasher = new PasswordHasher<UsersDbEntity>();
             var passwordHash = hasher.HashPassword(patientDbEntity, patientDbEntity.Password);
             patientDbEntity.Password = passwordHash;
-            var dbResponse = await _authRepository.CreatePatientUser(patientDbEntity);
+            var dbResponse = await _authRepository.CreateUser(patientDbEntity);
             dbResponse.Password = string.Empty;
             if (dbResponse.IsUserCreated)
             {
-                await SendEmailAsync(dbResponse.Email,dbResponse.EmailActivationCode.Value.ToString());
+                await SendEmailAsync(dbResponse.Email, dbResponse.EmailActivationCode.Value.ToString());
             }
             else
             {
@@ -74,7 +120,6 @@ namespace APSystem.Services.Auth
             return await Task.FromResult(registerUserResponse);
 
         }
-
 
         private async Task SendEmailAsync(string email, string emailActivationCode)
         {

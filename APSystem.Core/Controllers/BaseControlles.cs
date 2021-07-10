@@ -14,5 +14,6 @@ namespace APSystem.Core.Controllers
             _logger = logger;
         }
         public ILogger<T> _Logger { get { return _logger; } }
+        
     }
 }
