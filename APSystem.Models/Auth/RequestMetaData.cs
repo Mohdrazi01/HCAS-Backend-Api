@@ -11,6 +11,5 @@ namespace APSystem.Models.Auth
         }
         public AuthResponse AuthData { get; set; }
         public Dictionary<string, string> Attributes { get; set; }
-    
     }
 }

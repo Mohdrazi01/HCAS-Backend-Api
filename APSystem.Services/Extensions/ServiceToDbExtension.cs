@@ -1,4 +1,6 @@
+using System;
 using APSystem.Data.Entities;
+using APSystem.Models.Appointment;
 using APSystem.Models.Auth;
 
 namespace APSystem.Services.Extensions
@@ -25,6 +27,20 @@ namespace APSystem.Services.Extensions
                 Address = request.Address
             };
             return Users;
+        }
+
+        public static AppointmentsDbEntity CreateAppointmentService(this Appointments Aps)
+        {
+            AppointmentsDbEntity apDbEntity = new AppointmentsDbEntity(){
+                DoctorID = Aps.DoctorID,
+                AppointmentDate = Aps.AppointmentDate,
+                AppointmentTimeSlots = Aps.AppointmentTimeSlots,
+                IsActive = true,
+                CreatedBy = 1,
+                CreatedDate = DateTime.Now
+            };
+
+            return apDbEntity;
         }
 
     }

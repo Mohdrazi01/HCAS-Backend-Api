@@ -1,3 +1,4 @@
+using System.Globalization;
 using System;
 using APSystem.Configuration.Constants;
 using APSystem.Configuration.Settings;
@@ -26,7 +27,6 @@ namespace APSystem.Core.Configuration
             //  .AddEntityFrameworkStores<ApDbContext>()
             // .AddDefaultTokenProviders();
             services.AddDbContext<ApDbContext>(opts => opts.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
             // services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             // services.AddScoped(typeof(IAuthRepository), typeof(AuthRepository));
             //services.AddScoped(typeof(IMasterDataRepository), typeof(MasterDataRepository));

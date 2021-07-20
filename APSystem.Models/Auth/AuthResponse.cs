@@ -1,6 +1,6 @@
 namespace APSystem.Models.Auth
 {
-    public class AuthResponse
+    public class AuthResponse : BaseResponse
     {
         public int UserId { get; set; }
         public string UserName { get; set; }

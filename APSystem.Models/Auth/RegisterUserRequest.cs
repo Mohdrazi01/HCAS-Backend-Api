@@ -11,9 +11,9 @@ namespace APSystem.Models.Auth
     public string PhoneNumber { get; set; }
     public DateTime DateOfBirth { get; set; }
     public int Gender { get; set; }
-     public int? GMCNumber { get; set; }
+    public int? GMCNumber { get; set; }
     public string Speciality { get; set; }
-     public string Experience { get; set; }
-    public string Address { get; set; }  
+    public string Experience { get; set; }
+    public string Address { get; set; }
     }
 }

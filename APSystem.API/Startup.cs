@@ -54,7 +54,6 @@ namespace APSystem.API
             MiddlewareConfiguration.Configure(app);
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                var builder = endpoints.MapControllers();

@@ -59,7 +59,7 @@ namespace APSystem.Services.Auth
             if (user.IsEmailConfirmed == false)
                 throw new AppException(Models.Enums.AuthCodes.E6009);
             var hasher = new PasswordHasher<UsersDbEntity>();
-          var verifyPassword = hasher.VerifyHashedPassword(user, user.Password, request.Password);
+            var verifyPassword = hasher.VerifyHashedPassword(user, user.Password, request.Password);
             if (verifyPassword == PasswordVerificationResult.Failed)
             {
                 throw new UnauthorizedAccessException();
@@ -81,10 +81,10 @@ namespace APSystem.Services.Auth
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]{
-                new Claim("Id",user.UserID.ToString()),
+                new Claim("UserId",user.UserID.ToString()),
                  new Claim("UserName",user.UserName.ToString()),
                   new Claim("Email",user.Email.ToString()),
-                   new Claim("RoleID",user.RoleID.ToString()),
+                   new Claim("RoleId",user.RoleID.ToString()),
                     new Claim("IsActive",user.IsActive.ToString()),
                      new Claim("Name",user.Name.ToString()),
                        new Claim("IsEmailConfirmed",user.IsEmailConfirmed.ToString()),
@@ -100,11 +100,11 @@ namespace APSystem.Services.Auth
         async Task<RegisterUserResponse> IAuthService.RegisterUser(RegisterUserRequest request)
         {
             RegisterUserResponse registerUserResponse = new RegisterUserResponse();
-            var patientDbEntity = request.ToUserService();
+            var UserDbEntity = request.ToUserService(); //Extension
             var hasher = new PasswordHasher<UsersDbEntity>();
-            var passwordHash = hasher.HashPassword(patientDbEntity, patientDbEntity.Password);
-            patientDbEntity.Password = passwordHash;
-            var dbResponse = await _authRepository.CreateUser(patientDbEntity);
+            var passwordHash = hasher.HashPassword(UserDbEntity, UserDbEntity.Password);
+            UserDbEntity.Password = passwordHash;
+            var dbResponse = await _authRepository.CreateUser(UserDbEntity);
             dbResponse.Password = string.Empty;
             if (dbResponse.IsUserCreated)
             {

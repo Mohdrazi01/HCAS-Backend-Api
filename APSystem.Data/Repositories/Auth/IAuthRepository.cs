@@ -10,6 +10,7 @@ namespace APSystem.Data.Repositories.Auth
 
         Task<UsersDbEntity> GetUser(string userName);
         Task<bool> UsersEmailConfirmation(string activationCode);
+        
 
         // Task<long> SavePatientLoginHistory(PatientLoginHistoryDbEntity patientLoginHistoryDbEntity);
         // Task<long> SaveDoctorLoginHistory(DoctorLoginHistoryDbEntity doctorLoginHistoryDbEntity);

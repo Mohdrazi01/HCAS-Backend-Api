@@ -67,31 +67,26 @@ public class AuthorizationMiddleware
                     httpContext.Response.StatusCode = 401;
                     throw new UnauthorizedAccessException();
                 }
-                var supplierId = int.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "SupplierId").Value);
                 var userName = jwtToken.Claims.FirstOrDefault(x => x.Type == "UserName").Value;
-                var AccountId = int.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "AccountId").Value);
-                var Email = jwtToken.Claims.FirstOrDefault(x => x.Type == "Email").Value;
+                var email = jwtToken.Claims.FirstOrDefault(x => x.Type == "Email").Value;
                 var roleId = int.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "RoleId").Value);
                 var isActive = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsActive").Value);
-                var isAdmin = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsAdmin").Value);
-                var managerEmail = jwtToken.Claims.FirstOrDefault(x => x.Type == "ManagerEmail").Value;
-                var fullName = jwtToken.Claims.FirstOrDefault(x => x.Type == "FullName").Value;
-                var isInvoiceRequired = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsInvoiceRequired").Value);
-                var isRFQRequired = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsRFQRequired").Value);
+                var name = jwtToken.Claims.FirstOrDefault(x => x.Type == "Name").Value;
+                var isEmailConfirmed = bool.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "IsEmailConfirmed").Value); 
+                var emailActivationCode = jwtToken.Claims.FirstOrDefault(x => x.Type == "EmailActivationCode").Value;
                 AuthResponse authorizationResult = new AuthResponse()
                 {
-                    Email = Email,
+                    Email = email,
                     UserId = userId,
                     UserName = userName,
                     RoleId = roleId,
                     IsActive = isActive,
-                    IsAdmin = isAdmin,
-                    FullName = fullName,
+                    FullName = name,
                 };
                 metaDataService.SetAuth(authorizationResult);
                 metaDataService.SetAttribute(MetaDataEnum.CLIENT_IP_ADDRESS.ToString(), httpContext.Connection.RemoteIpAddress.ToString());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new UnauthorizedAccessException();
                 // do nothing if jwt validation fails

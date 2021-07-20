@@ -9,9 +9,13 @@ namespace APSystem.Data.Entities
     {
 
     [Key]
-    public int AppointmentID { get; set; }  
-    public int? DoctorID { get; set; }  
-    public DateTime? AppointmentDate { get; set; }  
+    public int AppointmentID { get; set; }
+    public int? DoctorID { get; set; }
+    public DateTime? AppointmentDate { get; set; }
     public int? AppointmentTimeSlots { get; set; }
+    [NotMapped]
+     public ApSlotsDbEntity appointmentSlots{get;set;}
+     [NotMapped]
+     public UsersDbEntity Users{get;set;}
     }
 }

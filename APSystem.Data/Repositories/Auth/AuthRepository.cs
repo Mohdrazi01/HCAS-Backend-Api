@@ -34,16 +34,16 @@ namespace APSystem.Data.Repositories.Auth
             }
             catch (System.Exception ex)
             {
-                // TODO
+                throw ex;
             }
 
 
             return usersDbEntity;
         }
 
-        async Task<UsersDbEntity> IAuthRepository.GetUser(int UserID)
+         Task<UsersDbEntity> IAuthRepository.GetUser(int UserID)
         {
-            throw new System.NotImplementedException();
+            throw  new System.NotImplementedException();
         }
 
         async Task<bool> IAuthRepository.UsersEmailConfirmation(string activationCode)
