@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Security.Claims;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using APSystem.Data.Model;
 
 namespace APSystem.Services.Auth
 {
@@ -34,8 +36,6 @@ namespace APSystem.Services.Auth
         , IWebHostEnvironment hostingEnvironment
         , IOptions<JwtSettings> jwtSettings
         , IEmailService emailService
-        //,IUserRepository userRepo
-        //,IHttpContextAccessor accessor
         , IAuthRepository authRepository
         , IMetaDataService metaDataService
         , ILogger<AuthService> logger) : base(metaDataService, logger)
@@ -46,8 +46,6 @@ namespace APSystem.Services.Auth
             _hostingEnvironment = hostingEnvironment;
             _jwtSettings = jwtSettings;
             _emailService = emailService;
-            //_userRepo = userRepo;
-            //_accessor = accessor;
         }
 
         async Task<AuthResponse> IAuthService.Login(AuthRequest request)
@@ -55,18 +53,19 @@ namespace APSystem.Services.Auth
             AuthResponse authResponse = new AuthResponse();
             var user = await _authRepository.GetUser(request.UserName);
             if (user == null || user.IsActive == false)
-                throw new UnauthorizedAccessException();
+               throw new AppException(Models.Enums.AuthCodes.E6002);
             if (user.IsEmailConfirmed == false)
-                throw new AppException(Models.Enums.AuthCodes.E6009);
+                throw new AppException(Models.Enums.AuthCodes.E6002);
             var hasher = new PasswordHasher<UsersDbEntity>();
             var verifyPassword = hasher.VerifyHashedPassword(user, user.Password, request.Password);
             if (verifyPassword == PasswordVerificationResult.Failed)
             {
-                throw new UnauthorizedAccessException();
+              throw new AppException(Models.Enums.AuthCodes.E6005);
             }
             var token = GenerateJwtToken(user);
             authResponse.UserId = user.UserID;
             authResponse.UserName = user.UserName;
+            authResponse.FullName = user.Name;
             authResponse.RoleId = user.RoleID;
             authResponse.Access_Token = token;
             authResponse.IsActive = user.IsActive;
@@ -90,11 +89,11 @@ namespace APSystem.Services.Auth
                        new Claim("IsEmailConfirmed",user.IsEmailConfirmed.ToString()),
                          new Claim("EmailActivationCode",user.EmailActivationCode.ToString()),
             }),
-            Expires = DateTime.UtcNow.AddDays(1),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-              var token = tokenHandler.CreateToken(tokenDescriptor);
-              return tokenHandler.WriteToken(token);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         async Task<RegisterUserResponse> IAuthService.RegisterUser(RegisterUserRequest request)
@@ -124,7 +123,7 @@ namespace APSystem.Services.Auth
         private async Task SendEmailAsync(string email, string emailActivationCode)
         {
             string mailBody = string.Empty;
-            string url = $"{_appSettings.Value.BaseUrl}activate?ActivationCode={emailActivationCode}";
+            string url = $"{_appSettings.Value.BaseUrl}activate?emailActivationCode={emailActivationCode}";
             var fileStream = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/email-verification.html"), FileMode.Open, FileAccess.Read);
             using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
             {
@@ -142,5 +141,115 @@ namespace APSystem.Services.Auth
             await _emailService.SendEmailAsync(emailRequest);
         }
 
+        async Task<UserDetailsResponse> IAuthService.GetUser(int UserID)
+        {
+            var userbyid = await _authRepository.GetUser(UserID);
+            UserDetailsResponse userDetailResponseByUserID = new UserDetailsResponse()
+            {
+                UserID = userbyid.UserID,
+                Name = userbyid.Name,
+                RoleID = userbyid.RoleID,
+                RoleName = userbyid.RoleName,
+                Email = userbyid.Email,
+                PhoneNumber = userbyid.PhoneNumber,
+                DateOfBirth = userbyid.DateOfBirth,
+                Gender = userbyid.Gender,
+                GenderName = userbyid.GenderName,
+                GMCNumber = userbyid.GMCNumber,
+                Speciality = userbyid.Speciality,
+                Experience = userbyid.Experience,
+                Address = userbyid.Address
+            };
+
+            return await Task.FromResult(userDetailResponseByUserID);
+        }
+
+        async Task<List<UserDetailsResponse>> IAuthService.GetAllUsersbyRole(int roleID)
+        {
+            var usersbyrole = await _authRepository.GetAllUsersbyRole(roleID);
+            List<UserDetailsResponse> userDetailResponsesByRoleID = new List<UserDetailsResponse>();
+            foreach (UserModel us in usersbyrole)
+            {
+                userDetailResponsesByRoleID.Add(new UserDetailsResponse
+                {
+                    UserID = us.UserID,
+                    Name = us.Name,
+                    RoleID = us.RoleID,
+                    RoleName = us.RoleName,
+                    Email = us.Email,
+                    PhoneNumber = us.PhoneNumber,
+                    DateOfBirth = us.DateOfBirth,
+                    Gender = us.Gender,
+                    GenderName = us.GenderName,
+                    GMCNumber = us.GMCNumber,
+                    Speciality = us.Speciality,
+                    Experience = us.Experience,
+                    Address = us.Address
+                });
+            }
+            return await Task.FromResult(userDetailResponsesByRoleID);
+        }
+
+        async Task<List<UserDetailsResponse>> IAuthService.GetAllUsers()
+        {
+            var usersbyrole = await _authRepository.GetAllUsers();
+            List<UserDetailsResponse> userDetailsResponses = new List<UserDetailsResponse>();
+            foreach (UserModel us in usersbyrole)
+            {
+                userDetailsResponses.Add(new UserDetailsResponse
+                {
+                    UserID = us.UserID,
+                    Name = us.Name,
+                    RoleID = us.RoleID,
+                    RoleName = us.RoleName,
+                    Email = us.Email,
+                    PhoneNumber = us.PhoneNumber,
+                    DateOfBirth = us.DateOfBirth,
+                    Gender = us.Gender,
+                    GenderName = us.GenderName,
+                    GMCNumber = us.GMCNumber,
+                    Speciality = us.Speciality,
+                    Experience = us.Experience,
+                    Address = us.Address
+                });
+            }
+            return await Task.FromResult(userDetailsResponses);
+        }
+
+        async Task<List<RoleResponse>> IAuthService.GetRoles()
+        {
+            var userRoles = await _authRepository.GetRoles();
+            List<RoleResponse> userRolesList = new List<RoleResponse>();
+            foreach (RolesModelItem r in userRoles)
+            {
+                userRolesList.Add(new RoleResponse
+                {
+                    RoleID = r.RoleID,
+                    RoleName = r.RoleName
+                });
+            }
+            return await Task.FromResult(userRolesList);
+        }
+
+        async Task<List<GenderResponse>> IAuthService.GetGender()
+        {
+            var userGender = await _authRepository.GetGender();
+            List<GenderResponse> genderResponses = new List<GenderResponse>();
+            foreach (GenderModel r in userGender)
+            {
+                genderResponses.Add(new GenderResponse
+                {
+                    GenderId = r.GenderId,
+                    GenderName = r.GenderName
+                });
+            }
+            return await Task.FromResult(genderResponses);
+        }
+
+        async Task<EmailConfirmationResponse> IAuthService.UsersEmailConfirmation(string activationCode)
+        {
+            var userConfirmation = await _authRepository.UsersEmailConfirmation(activationCode);
+            return await Task.FromResult(new EmailConfirmationResponse());
+        }
     }
 }

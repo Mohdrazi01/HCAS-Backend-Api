@@ -1,9 +1,11 @@
-
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using APSystem.Models.Auth;
-using APSystem.Services.Auth;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using APSystem.Models.Auth;
+using APSystem.Services.Auth;
 
 namespace APSystem.Core.Controllers.Auth
 {
@@ -28,7 +30,44 @@ namespace APSystem.Core.Controllers.Auth
         public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request)
         {
             var response = await _authService.Login(request);
-            return Ok(response);
+            return response;
+        }
+
+        [HttpGet("GetAllUsers")]
+         public async Task<ActionResult<List<UserDetailsResponse>>> GetUsers()
+        {
+            var listofUsers = await _authService.GetAllUsers();
+            return listofUsers;
+        }
+        [HttpPost("UserbyID")]
+         public async Task<ActionResult<UserDetailsResponse>> GetUserById(int userID)
+        {
+            var user = await _authService.GetUser(userID);
+            return user;
+        }
+        [HttpPost("UsersbyRoleID")]
+         public async Task<ActionResult<List<UserDetailsResponse>>> GetUsersByRoleID(int roleID)
+        {
+            var userbyRole = await _authService.GetAllUsersbyRole(roleID);
+            return userbyRole;
+        }
+        [HttpGet("GetAllRoles")]
+         public async Task<ActionResult<List<RoleResponse>>> GetAllRoles()
+        {
+            var roles = await _authService.GetRoles();
+            return roles;
+        }
+        [HttpGet("GetAllGenders")]
+         public async Task<ActionResult<List<GenderResponse>>> GetAllGenders()
+        {
+            var genders = await _authService.GetGender();
+            return genders;
+        }
+        [HttpPost("EmailConfirmation")]
+         public async Task<ActionResult<EmailConfirmationResponse>> GetAllGenders(string emailActivationCode)
+        {
+            var userConfirmation = await _authService.UsersEmailConfirmation(emailActivationCode);
+            return userConfirmation;
         }
 
     }

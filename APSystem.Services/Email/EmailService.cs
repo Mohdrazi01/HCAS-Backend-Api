@@ -62,5 +62,17 @@ namespace APSystem.Services.Email
                 }
             }
         }
+
+        public async Task SendBookingSuccessToPatient(EmailRequest emailRequest)
+        {
+             var mailMessage = CreateEmailMessage(emailRequest);
+            await SendAsync(mailMessage);
+        }
+
+        public async Task SendNewBookingToDoctor(EmailRequest emailRequest)
+        {
+            var mailMessage = CreateEmailMessage(emailRequest);
+            await SendAsync(mailMessage);
+        }
     }
 }

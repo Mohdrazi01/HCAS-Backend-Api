@@ -43,28 +43,44 @@ namespace APSystem.Data.Repositories.BookingAppointment
             }
             return await Task.FromResult(listofBookings);
         }
-        async Task<BookingsModel> IBookingsRepository.CreateBooking(BookingsModel bookingsModel)
+        async Task<List<UserModel>> IBookingsRepository.CreateBooking(BookingsModel bookingsModel)
         {
+            List<UserModel> users = new List<UserModel>();
             try
             {
-                using(IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection)){
-                     string spname = "CreateBooking";
-                     var parameters = new DynamicParameters();
-                     parameters.Add("@PatientID",bookingsModel.PatientID,DbType.Int32);
-                     parameters.Add("@DoctorID",bookingsModel.DoctorID,DbType.Int32);
-                     parameters.Add("@AppointmentID",bookingsModel.AppointmentID,DbType.Int32);
-                     parameters.Add("@AppointmentTypeID",bookingsModel.AppointmentTypeID,DbType.Int32);
-                     parameters.Add("@PhoneNumber",bookingsModel.PatientName,DbType.String);
-                     parameters.Add("@ProblemDiscription",bookingsModel.ProblemDiscription,DbType.String);
-                    await con.ExecuteAsync(spname,parameters);
+                UserModel Doctor = new UserModel(){
+                    UserID = bookingsModel.DoctorID
+                };
+                UserModel Patient = new UserModel(){
+                    UserID = bookingsModel.PatientID
+                };
+                var patient = _dbContext.ApUsers.Find();
+                using (IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
+                {
+                    string spname = "CreateBooking";
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@PatientID", bookingsModel.PatientID, DbType.Int32);
+                    parameters.Add("@DoctorID", bookingsModel.DoctorID, DbType.Int32);
+                    parameters.Add("@AppointmentID", bookingsModel.AppointmentID, DbType.Int32);
+                    parameters.Add("@AppointmentTypeID", bookingsModel.AppointmentTypeID, DbType.Int32);
+                    parameters.Add("@PhoneNumber", bookingsModel.PatientName, DbType.String);
+                    parameters.Add("@ProblemDiscription", bookingsModel.ProblemDiscription, DbType.String);
+                    var bookingSuccess = await con.ExecuteAsync(spname, parameters);
+                    if(bookingSuccess == 1){
+                        users.Add(Doctor);
+                        users.Add(Patient);
+                    }
+
                 }
             }
             catch (DBConcurrencyException)
             {
                 throw new Exception();
             }
-            return await Task.FromResult(bookingsModel);
+            return await Task.FromResult(users);
         }
+
+
 
         async Task<BookingsModel> IBookingsRepository.GetBookingsById(BookingsModel bookingbyId)
         {
@@ -125,14 +141,34 @@ namespace APSystem.Data.Repositories.BookingAppointment
 
         async Task<BookingsDbEntity> IBookingsRepository.UpdateBooking(int id, BookingsDbEntity updatebooking)
         {
+            BookingsModel boookingmodel = new BookingsModel(){
+                BookingID = id,
+                AppointmentID = updatebooking.AppointmentID,
+                PhoneNumber = updatebooking.PhoneNumber,
+                ProblemDiscription = updatebooking.ProblemDiscription,
+                StatusID = updatebooking.StatusID
+            };
             try
             {
-                var existingbooking = await _dbContext.Bookings.FindAsync(id);
-                if (existingbooking != null)
+                // var existingbooking = await _dbContext.Bookings.FindAsync(id);
+                // if (existingbooking != null)
+                // {
+                //     _dbContext.Bookings.Update(updatebooking);
+                //     _dbContext.SaveChanges();
+                // }
+                using(IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
                 {
-                    _dbContext.Bookings.Update(updatebooking);
-                    _dbContext.SaveChanges();
+                    string spname = "EditbookingbyID";
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@BookingID",boookingmodel.BookingID);
+                    parameters.Add("@AppointmentID",boookingmodel.AppointmentID);
+                    parameters.Add("@PhoneNumber",boookingmodel.PhoneNumber);
+                    parameters.Add("@ProblemDiscription",boookingmodel.ProblemDiscription);
+                    parameters.Add("@StatusID",boookingmodel.StatusID);
+                    var updatedbooking = await con.ExecuteAsync(spname,parameters);
                 }
+
+
             }
             catch (Exception)
             {
@@ -156,5 +192,7 @@ namespace APSystem.Data.Repositories.BookingAppointment
             }
             return await Task.FromResult(deleteid);
         }
+
+
     }
 }

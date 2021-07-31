@@ -11,8 +11,8 @@ namespace APSystem.Models.Auth
         public bool IsAdmin { get; set; }
         public bool IsActive { get; set; }
         public string Access_Token { get; set; }
-
         public bool IsEmailConfirmed {get;set;}
+
 
     }
 }

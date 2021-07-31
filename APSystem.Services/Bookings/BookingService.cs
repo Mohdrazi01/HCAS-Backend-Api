@@ -1,20 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using APSystem.Data.Entities;
 using APSystem.Data.Model;
 using APSystem.Data.Repositories.BookingAppointment;
 using APSystem.Models.Appointment;
 using APSystem.Models.Bookings;
+using APSystem.Models.Email;
+using APSystem.Services.Email;
+using Microsoft.AspNetCore.Hosting;
 
 namespace APSystem.Services.Bookings
 {
     public class BookingService : IBookingsService
     {
         private IBookingsRepository _bookingRepository;
-        public BookingService(IBookingsRepository bookingRepository)
+        private readonly IEmailService _emailService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public BookingService(IBookingsRepository bookingRepository, IEmailService emailService, IWebHostEnvironment hostingEnvironment)
         {
             _bookingRepository = bookingRepository;
+            _emailService = emailService;
+            _hostingEnvironment = hostingEnvironment;
         }
         async Task<List<BookingAppointment>> IBookingsService.GetAllBookings()
         {
@@ -56,8 +65,56 @@ namespace APSystem.Services.Bookings
                 ProblemDiscription = cresteBooking.ProblemDiscription,
             };
             var create = await _bookingRepository.CreateBooking(bookingtodb);
+            if(create != null){
+                foreach(UserModel u in create){
+                    if (u.RoleID == 2){
+                       await SendDoctorEmail(u.Email);
+                    }
+                    if (u.RoleID == 1){
+                       await SendPatientEmail(u.Email);
+                    }
+                };
+            }
             return await Task.FromResult(cresteBooking);
         }
+
+        public async Task SendDoctorEmail(string doctorEmail)
+        {
+            string mailBody = string.Empty;
+            var fileStream = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/doctor-new-booking.html"), FileMode.Open, FileAccess.Read);
+            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+            {
+                mailBody = streamReader.ReadToEnd();
+            }
+            List<string> emails = new List<string>();
+            emails.Add(doctorEmail);
+            EmailRequest emailRequest = new EmailRequest(
+                         emails,
+                         $"New Appointment Booking",
+                        mailBody,
+                         null
+                     );
+            await _emailService.SendEmailAsync(emailRequest);
+        }
+        public async Task SendPatientEmail(string patientEmail)
+        {
+            string mailBody = string.Empty;
+            var fileStream = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/patient-new-booking.html"), FileMode.Open, FileAccess.Read);
+            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+            {
+                mailBody = streamReader.ReadToEnd();
+            }
+            List<string> emails = new List<string>();
+            emails.Add(patientEmail);
+            EmailRequest emailRequest = new EmailRequest(
+                         emails,
+                         $"Appointment Bookikng Email",
+                        mailBody,
+                         null
+                     );
+            await _emailService.SendEmailAsync(emailRequest);
+        }
+
 
         async Task<BookingAppointment> IBookingsService.GetBookingsById(BookingAppointment bookingid)
         {
@@ -120,7 +177,7 @@ namespace APSystem.Services.Bookings
             return await Task.FromResult(bookingappointment);
         }
 
-          async Task<List<BookingAppointment>> IBookingsService.GetBookingsByDoctorId(BookingAppointment doctorid)
+        async Task<List<BookingAppointment>> IBookingsService.GetBookingsByDoctorId(BookingAppointment doctorid)
         {
             var bookingappointment = new List<BookingAppointment>();
             BookingsModel bookingsbyuserid = new BookingsModel()

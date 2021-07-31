@@ -15,5 +15,6 @@ namespace APSystem.Models.Auth
     public string Speciality { get; set; }
     public string Experience { get; set; }
     public string Address { get; set; }
+    public string EmailActivation { get; set;}
     }
 }

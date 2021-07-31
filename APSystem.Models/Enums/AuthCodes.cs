@@ -20,8 +20,8 @@ namespace APSystem.Models.Enums
         [EnumMember(Value = "Invalid Parameters.")]
         [Description("Invalid Parameters")]
         E6004,
-        [EnumMember(Value = "Current password is incorrect.")]
-        [Description("Current password is incorrect.")]
+        [EnumMember(Value = "User Name or password is incorrect.")]
+        [Description("User Name or password is incorrect.")]
         E6005,
         [EnumMember(Value = "Not Found")]
         [Description("Email Id does not exists.")]
@@ -32,7 +32,7 @@ namespace APSystem.Models.Enums
         [EnumMember(Value = "Old Password can not be blank.")]
         [Description("Old Password can not be blank.")]
         E6008,
-        [EnumMember(Value = "User name is already exists.")]
+        [EnumMember(Value = "User name already exists.")]
         [Description("User name is already exists.")]
         E6009
     }

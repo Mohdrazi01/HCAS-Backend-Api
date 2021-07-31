@@ -19,6 +19,7 @@ namespace APSystem.Data.Model
         public string ApStatus {get;set;}
         public string PhoneNumber { get; set; }
         public string ProblemDiscription { get; set; }
+         public bool IsBookingCreated { get; set; }
 
     }
 }
