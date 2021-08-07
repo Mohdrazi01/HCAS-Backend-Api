@@ -70,7 +70,7 @@ namespace APSystem.Services.Bookings
                     if (u.RoleID == 2){
                        await SendDoctorEmail(u.Email);
                     }
-                    if (u.RoleID == 1){
+                    else if ( u.RoleID == 1 || u.RoleID == 4 || u.RoleID == 2 || u.RoleID == 3 ){
                        await SendPatientEmail(u.Email);
                     }
                 };
@@ -229,6 +229,19 @@ namespace APSystem.Services.Bookings
                 BookingID = id
             };
             await _bookingRepository.DeleteBooking(deletebyid);
+        }
+
+        async Task<List<AppointmentType>> IBookingsService.GetAllAppointmentType()
+        {
+           List<AppointmentType> AptypesSrvice = new List<AppointmentType>();
+           var Aptypes = await _bookingRepository.GetAllApTypes();
+            foreach(var Ap in Aptypes){
+                AptypesSrvice.Add(new AppointmentType{
+                    AppointmentTypeID = Ap.AppointmentTypeID,
+                    AppointmentTypes = Ap.AppointmentTypes
+                });
+            }
+            return await Task.FromResult(AptypesSrvice);
         }
     }
 }

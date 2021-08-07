@@ -1,5 +1,6 @@
 using System;
 using APSystem.Data.Entities;
+using APSystem.Data.Model;
 using APSystem.Models.Appointment;
 using APSystem.Models.Auth;
 
@@ -29,15 +30,17 @@ namespace APSystem.Services.Extensions
             return Users;
         }
 
-        public static AppointmentsDbEntity CreateAppointmentService(this Appointments Aps)
+        public static AppointmentsModelItem CreateAppointmentService(this Appointments Aps)
         {
-            AppointmentsDbEntity apDbEntity = new AppointmentsDbEntity(){
+            AppointmentsModelItem apDbEntity = new AppointmentsModelItem(){
                 DoctorID = Aps.DoctorID,
                 AppointmentDate = Aps.AppointmentDate,
-                AppointmentTimeSlots = Aps.AppointmentTimeSlots,
+                AppointmentTimeSlots = Aps.AppointmentTimeSlotsArray,
                 IsActive = true,
                 CreatedBy = 1,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                ModifiedBy = 0,
+                ModifiedDate =  DateTime.Now
             };
 
             return apDbEntity;

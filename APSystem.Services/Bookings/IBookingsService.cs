@@ -9,6 +9,7 @@ namespace APSystem.Services.Bookings
     {
         Task<List<BookingAppointment>> GetAllBookings();
         Task<BookingAppointment> CreateBooking(BookingAppointment createBooking);
+        Task<List<AppointmentType>> GetAllAppointmentType();
         Task<BookingAppointment> GetBookingsById(BookingAppointment bookingid);
         Task<List<BookingAppointment>> GetBookingsByUserId(BookingAppointment patientid);
         Task<List<BookingAppointment>> GetBookingsByDoctorId(BookingAppointment doctorid);

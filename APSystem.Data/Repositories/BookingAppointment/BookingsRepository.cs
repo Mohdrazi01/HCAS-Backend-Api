@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using System.Data;
 using System;
@@ -48,13 +49,15 @@ namespace APSystem.Data.Repositories.BookingAppointment
             List<UserModel> users = new List<UserModel>();
             try
             {
-                UserModel Doctor = new UserModel(){
+                UserModel Doctor = new UserModel()
+                {
                     UserID = bookingsModel.DoctorID
                 };
-                UserModel Patient = new UserModel(){
+                UserModel Patient = new UserModel()
+                {
                     UserID = bookingsModel.PatientID
                 };
-                var patient = _dbContext.ApUsers.Find();
+
                 using (IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
                 {
                     string spname = "CreateBooking";
@@ -63,12 +66,29 @@ namespace APSystem.Data.Repositories.BookingAppointment
                     parameters.Add("@DoctorID", bookingsModel.DoctorID, DbType.Int32);
                     parameters.Add("@AppointmentID", bookingsModel.AppointmentID, DbType.Int32);
                     parameters.Add("@AppointmentTypeID", bookingsModel.AppointmentTypeID, DbType.Int32);
-                    parameters.Add("@PhoneNumber", bookingsModel.PatientName, DbType.String);
+                    parameters.Add("@PhoneNumber", bookingsModel.PhoneNumber, DbType.String);
                     parameters.Add("@ProblemDiscription", bookingsModel.ProblemDiscription, DbType.String);
-                    var bookingSuccess = await con.ExecuteAsync(spname, parameters);
-                    if(bookingSuccess == 1){
-                        users.Add(Doctor);
-                        users.Add(Patient);
+                    var bookingSuccess = await con.ExecuteAsync(spname, parameters, commandType: CommandType.StoredProcedure, commandTimeout: 1000);
+                    var doctor = await _dbContext.ApUsers.SingleOrDefaultAsync(x => x.UserID == Doctor.UserID);
+                    var patient = await _dbContext.ApUsers.SingleOrDefaultAsync(x => x.UserID == Patient.UserID);
+                    if (doctor != null && patient != null)
+                    {
+                        UserModel Doctor1 = new UserModel()
+                        {
+                            UserID = doctor.UserID,
+                            RoleID = doctor.RoleID,
+                            Email = doctor.Email,
+                            Name = doctor.Name
+                        };
+                        UserModel Patient1 = new UserModel()
+                        {
+                            UserID = patient.UserID,
+                            RoleID = patient.RoleID,
+                            Email = patient.Email,
+                            Name = patient.Email
+                        };
+                        users.Add(Doctor1);
+                        users.Add(Patient1);
                     }
 
                 }
@@ -79,7 +99,6 @@ namespace APSystem.Data.Repositories.BookingAppointment
             }
             return await Task.FromResult(users);
         }
-
 
 
         async Task<BookingsModel> IBookingsRepository.GetBookingsById(BookingsModel bookingbyId)
@@ -141,7 +160,8 @@ namespace APSystem.Data.Repositories.BookingAppointment
 
         async Task<BookingsDbEntity> IBookingsRepository.UpdateBooking(int id, BookingsDbEntity updatebooking)
         {
-            BookingsModel boookingmodel = new BookingsModel(){
+            BookingsModel boookingmodel = new BookingsModel()
+            {
                 BookingID = id,
                 AppointmentID = updatebooking.AppointmentID,
                 PhoneNumber = updatebooking.PhoneNumber,
@@ -156,16 +176,16 @@ namespace APSystem.Data.Repositories.BookingAppointment
                 //     _dbContext.Bookings.Update(updatebooking);
                 //     _dbContext.SaveChanges();
                 // }
-                using(IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
+                using (IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
                 {
                     string spname = "EditbookingbyID";
                     var parameters = new DynamicParameters();
-                    parameters.Add("@BookingID",boookingmodel.BookingID);
-                    parameters.Add("@AppointmentID",boookingmodel.AppointmentID);
-                    parameters.Add("@PhoneNumber",boookingmodel.PhoneNumber);
-                    parameters.Add("@ProblemDiscription",boookingmodel.ProblemDiscription);
-                    parameters.Add("@StatusID",boookingmodel.StatusID);
-                    var updatedbooking = await con.ExecuteAsync(spname,parameters);
+                    parameters.Add("@BookingID", boookingmodel.BookingID);
+                    parameters.Add("@AppointmentID", boookingmodel.AppointmentID);
+                    parameters.Add("@PhoneNumber", boookingmodel.PhoneNumber);
+                    parameters.Add("@ProblemDiscription", boookingmodel.ProblemDiscription);
+                    parameters.Add("@StatusID", boookingmodel.StatusID);
+                    var updatedbooking = await con.ExecuteAsync(spname, parameters);
                 }
 
 
@@ -193,6 +213,16 @@ namespace APSystem.Data.Repositories.BookingAppointment
             return await Task.FromResult(deleteid);
         }
 
-
+        async Task<List<AppointmentTypeModel>> IBookingsRepository.GetAllApTypes()
+        {
+            List<AppointmentTypeModel> Aptypes = new List<AppointmentTypeModel>();
+            using(IDbConnection con = new SqlConnection(_connectionSetting.Value.DefaultConnection))
+            {
+              string spname = "GetAllAppointmentType";
+              var AptypesList = con.Query<AppointmentTypeModel>(spname,commandType: CommandType.StoredProcedure, commandTimeout: 1000).ToList();
+              Aptypes.AddRange(AptypesList);
+            }
+            return await Task.FromResult(Aptypes);
+        }
     }
 }

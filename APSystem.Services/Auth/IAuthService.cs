@@ -8,8 +8,10 @@ namespace APSystem.Services.Auth
     {
         Task<AuthResponse> Login(AuthRequest request);
         Task<RegisterUserResponse> RegisterUser(RegisterUserRequest request);
-         Task<UserDetailsResponse> GetUser(int UserID);
+        Task<UserDetailsResponse> GetUser(int UserID);
+        Task<UserDetailsResponse> UpdateUserDetails(int id,UserDetailsRequest User);
         Task<List<UserDetailsResponse>> GetAllUsersbyRole(int roleID);
+        Task<List<UserDetailsResponse>> GetAllDoctorsandNurses();
         Task<List<UserDetailsResponse>> GetAllUsers();
         Task<List<RoleResponse>> GetRoles();
         Task<EmailConfirmationResponse> UsersEmailConfirmation(string activationCode);

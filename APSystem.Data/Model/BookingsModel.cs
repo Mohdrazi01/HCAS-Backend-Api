@@ -11,8 +11,8 @@ namespace APSystem.Data.Model
         public string DoctorName{get;set;}
         public int? AppointmentID { get; set; }
         public DateTime? AppointmentDate {get;set;}
-        public TimeSpan? AppointmentStartTime { get; set; }
-        public TimeSpan? AppointmentEndTime { get; set; }
+        public string AppointmentStartTime { get; set; }
+        public string AppointmentEndTime { get; set; }
         public int? AppointmentTypeID { get; set; }
         public string AppointmentType {get;set;}
         public int? StatusID {get;set;}

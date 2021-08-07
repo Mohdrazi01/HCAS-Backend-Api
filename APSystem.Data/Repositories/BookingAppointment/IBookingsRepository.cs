@@ -10,6 +10,7 @@ namespace APSystem.Data.Repositories.BookingAppointment
          Task<List<BookingsModel>> GetAllBookings();
 
          Task<List<UserModel>> CreateBooking(BookingsModel bookings);
+         Task<List<AppointmentTypeModel>> GetAllApTypes();
 
          Task<BookingsModel> GetBookingsById(BookingsModel bookingid);
 

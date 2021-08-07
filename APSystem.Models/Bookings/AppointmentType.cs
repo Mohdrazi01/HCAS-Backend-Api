@@ -1,6 +1,6 @@
 namespace APSystem.Models.Bookings
 {
-    public class AppointmentType
+    public class AppointmentType : BaseResponse
     {
         public int AppointmentTypeID { get; set; }
         public string AppointmentTypes { get; set; }

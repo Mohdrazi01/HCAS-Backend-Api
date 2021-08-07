@@ -2,7 +2,7 @@ using System;
 
 namespace APSystem.Models.Bookings
 {
-    public class BookingAppointment
+    public class BookingAppointment: BaseResponse
     {
         public int BookingID { get; set; }
         public int? PatientID { get; set; }
@@ -11,8 +11,8 @@ namespace APSystem.Models.Bookings
         public string DoctorName { get; set; }
         public int? AppointmentID { get; set; }
         public DateTime? AppointmentDate { get; set; }
-        public TimeSpan? AppointmentStartTime { get; set; }
-        public TimeSpan? AppointmentEndTime { get; set; }
+        public string AppointmentStartTime { get; set; }
+        public string AppointmentEndTime { get; set; }
         public int? AppointmentTypeID { get; set; }
         public string AppointmentType { get; set; }
         public string PhoneNumber { get; set; }

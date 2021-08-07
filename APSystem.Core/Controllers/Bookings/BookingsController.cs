@@ -32,21 +32,21 @@ namespace APSystem.Core.Controllers.Bookings
             return bookings;
         }
 
-        [HttpPost("GetBookingsbyUserId")]
+        [HttpGet("GetBookingsbyUserId")]
         public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyUser([FromBody] BookingAppointment bookingbyUserid)
         {
             var bookings = await _bookingsService.GetBookingsByUserId(bookingbyUserid);
             return bookings;
         }
 
-        [HttpPost("GetBookingsbyDoctorId")]
+        [HttpGet("GetBookingsbyDoctorId")]
         public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyDoctorId([FromBody] BookingAppointment bookingbyDoctorid)
         {
             var bookings = await _bookingsService.GetBookingsByDoctorId(bookingbyDoctorid);
             return bookings;
         }
 
-        [HttpPost("GetBookingsbyId")]
+        [HttpGet("GetBookingsbyId")]
         public async Task<ActionResult<BookingAppointment>> GetBookingsbyID([FromBody] BookingAppointment bookingbyid)
         {
             var bookings = await _bookingsService.GetBookingsById(bookingbyid);
@@ -65,6 +65,12 @@ namespace APSystem.Core.Controllers.Bookings
         {
             _bookingsService.DeleteBooking(id);
             return Ok();
+        }
+        [HttpGet("GetAppointmentTypes")]
+        public async Task<ActionResult<List<AppointmentType>>> GetAllAppointmentTypes(){
+
+           var AppointemntTypes =  _bookingsService.GetAllAppointmentType();
+           return await AppointemntTypes;
         }
 
     }

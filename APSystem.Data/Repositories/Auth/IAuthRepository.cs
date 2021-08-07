@@ -9,10 +9,12 @@ namespace APSystem.Data.Repositories.Auth
     {
         Task<UsersDbEntity> CreateUser(UsersDbEntity usersDbEntity);
         Task<UserModel> GetUser(int UserID);
+        Task<UserModel> UpdateUserDetails(int id,UserModel User);
         Task<List<UserModel>> GetAllUsersbyRole(int roleID);
         Task<List<UserModel>> GetAllUsers();
         Task<List<RolesModelItem>> GetRoles();
         Task<List<GenderModel>> GetGender();
+        Task<List<UserModel>> GetAllDoctorsandNurses();
         Task<UsersDbEntity> GetUser(string userName);
         Task<bool> UsersEmailConfirmation(string activationCode);
 

@@ -53,14 +53,14 @@ namespace APSystem.Services.Auth
             AuthResponse authResponse = new AuthResponse();
             var user = await _authRepository.GetUser(request.UserName);
             if (user == null || user.IsActive == false)
-               throw new AppException(Models.Enums.AuthCodes.E6002);
+                throw new AppException(Models.Enums.AuthCodes.E6002);
             if (user.IsEmailConfirmed == false)
                 throw new AppException(Models.Enums.AuthCodes.E6002);
             var hasher = new PasswordHasher<UsersDbEntity>();
             var verifyPassword = hasher.VerifyHashedPassword(user, user.Password, request.Password);
             if (verifyPassword == PasswordVerificationResult.Failed)
             {
-              throw new AppException(Models.Enums.AuthCodes.E6005);
+                throw new AppException(Models.Enums.AuthCodes.E6005);
             }
             var token = GenerateJwtToken(user);
             authResponse.UserId = user.UserID;
@@ -167,6 +167,59 @@ namespace APSystem.Services.Auth
         async Task<List<UserDetailsResponse>> IAuthService.GetAllUsersbyRole(int roleID)
         {
             var usersbyrole = await _authRepository.GetAllUsersbyRole(roleID);
+            List<UserDetailsResponse> userDetailResponsesByRoleID = new List<UserDetailsResponse>();
+            foreach (UserModel us in usersbyrole)
+            {
+                userDetailResponsesByRoleID.Add(new UserDetailsResponse
+                {
+                    UserID = us.UserID,
+                    Name = us.Name,
+                    RoleID = us.RoleID,
+                    RoleName = us.RoleName,
+                    Email = us.Email,
+                    PhoneNumber = us.PhoneNumber,
+                    DateOfBirth = us.DateOfBirth,
+                    Gender = us.Gender,
+                    GenderName = us.GenderName,
+                    GMCNumber = us.GMCNumber,
+                    Speciality = us.Speciality,
+                    Experience = us.Experience,
+                    Address = us.Address
+                });
+            }
+            return await Task.FromResult(userDetailResponsesByRoleID);
+        }
+
+        async Task<UserDetailsResponse> IAuthService.UpdateUserDetails(int id, UserDetailsRequest userbyid)
+        {
+            UserDetailsResponse userresp = new UserDetailsResponse();
+            UserModel updateUser = new UserModel()
+            {
+                UserID = userbyid.UserID,
+                Name = userbyid.Name,
+                RoleID = userbyid.RoleID,
+                RoleName = userbyid.RoleName,
+                Email = userbyid.Email,
+                PhoneNumber = userbyid.PhoneNumber,
+                DateOfBirth = userbyid.DateOfBirth,
+                Gender = userbyid.Gender,
+                GenderName = userbyid.GenderName,
+                GMCNumber = userbyid.GMCNumber,
+                Speciality = userbyid.Speciality,
+                Experience = userbyid.Experience,
+                Address = userbyid.Address
+            };
+            var user = _authRepository.UpdateUserDetails(id, updateUser);
+
+            return await Task.FromResult(userresp);
+
+        }
+
+
+
+        async Task<List<UserDetailsResponse>> IAuthService.GetAllDoctorsandNurses()
+        {
+            var usersbyrole = await _authRepository.GetAllDoctorsandNurses();
             List<UserDetailsResponse> userDetailResponsesByRoleID = new List<UserDetailsResponse>();
             foreach (UserModel us in usersbyrole)
             {

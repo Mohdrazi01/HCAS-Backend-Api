@@ -12,7 +12,7 @@ namespace APSystem.Data.Repositories.Appointment
         Task<ApSlotsModelItem> GetApSlotbyid(ApSlotsModelItem apSlotId);
         Task<ApSlotsModelItem> UpdateAppointmentSlots(ApSlotsModelItem uapslots);
         void DeleteAppointmentSlots(int id);
-        Task<AppointmentsDbEntity> CreateAppointments(AppointmentsDbEntity aps);
+        Task<AppointmentsModelItem> CreateAppointments(AppointmentsModelItem aps);
         Task<List<AppointmentsModelItem>> ListofAppointments();
         Task<List<AppointmentsModelItem>> GetAppointmentsbyDocId(AppointmentsModelItem docid);
 

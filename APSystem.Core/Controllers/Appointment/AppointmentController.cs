@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace APSystem.Core.Controllers.Appointment
 {
-    [Route("api/v1/Appointment")]
+    [Route("api/v1/Auth")]
     [ApiController]
     public class AppointmentController : BaseController<AppointmentController>
     {
@@ -32,7 +32,7 @@ namespace APSystem.Core.Controllers.Appointment
         }
 
         [HttpPost("ApSlotsbyid")]
-        public async Task<ActionResult<AppointmentSlots>> AppointmentSlotById([FromBody] int id)
+        public async Task<ActionResult<AppointmentSlots>> AppointmentSlotById(int id)
         {
             AppointmentSlots apSlotid = new AppointmentSlots() { AppointmentSlotID = id };
             var apSlotbyid = _appointmentService.ApSlotbyId(apSlotid);

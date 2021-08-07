@@ -39,16 +39,23 @@ namespace APSystem.Core.Controllers.Auth
             var listofUsers = await _authService.GetAllUsers();
             return listofUsers;
         }
-        [HttpPost("UserbyID")]
+        [HttpGet("UserbyID")]
          public async Task<ActionResult<UserDetailsResponse>> GetUserById(int userID)
         {
             var user = await _authService.GetUser(userID);
             return user;
         }
-        [HttpPost("UsersbyRoleID")]
+        [HttpGet("UsersbyRoleID")]
          public async Task<ActionResult<List<UserDetailsResponse>>> GetUsersByRoleID(int roleID)
         {
             var userbyRole = await _authService.GetAllUsersbyRole(roleID);
+            return userbyRole;
+        }
+
+        [HttpGet("GetDoctorsandNurses")]
+         public async Task<ActionResult<List<UserDetailsResponse>>> GetDoctorsandNurses()
+        {
+            var userbyRole = await _authService.GetAllDoctorsandNurses();
             return userbyRole;
         }
         [HttpGet("GetAllRoles")]
@@ -68,6 +75,13 @@ namespace APSystem.Core.Controllers.Auth
         {
             var userConfirmation = await _authService.UsersEmailConfirmation(emailActivationCode);
             return userConfirmation;
+        }
+
+        [HttpPost("UpdateUserDetails")]
+        public async Task<ActionResult<UserDetailsResponse>> UpdateUser(int id, UserDetailsRequest user)
+        {
+            var userUpdated = await _authService.UpdateUserDetails(id,user);
+            return userUpdated;
         }
 
     }

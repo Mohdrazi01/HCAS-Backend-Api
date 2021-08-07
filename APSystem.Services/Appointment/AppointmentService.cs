@@ -89,7 +89,7 @@ namespace APSystem.Services.Appointment
             Appointments serviceAp = new Appointments();
             var appointments = aps.CreateAppointmentService();
             var ap = _appointmentRepository.CreateAppointments(appointments);
-            return await Task.FromResult(serviceAp);
+            return await Task.FromResult(aps);
         }
 
         async Task<List<AppointmentwithSlotsjoin>> IAppointmentService.ListAppointments()
@@ -101,7 +101,8 @@ namespace APSystem.Services.Appointment
                 appointments.Add(new AppointmentwithSlotsjoin()
                 {
                     AppointmentID = ad.AppointmentID,
-                    DoctorID = ad.DoctorID,
+                    UserID = ad.UserID,
+                    Name = ad.Name,
                     AppointmentDate = ad.AppointmentDate,
                     AppointmentStartTime = ad.AppointmentStartTime,
                     AppointmentEndTime = ad.AppointmentEndTime
