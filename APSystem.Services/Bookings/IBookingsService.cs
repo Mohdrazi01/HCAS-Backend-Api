@@ -9,10 +9,12 @@ namespace APSystem.Services.Bookings
     {
         Task<List<BookingAppointment>> GetAllBookings();
         Task<BookingAppointment> CreateBooking(BookingAppointment createBooking);
-        Task<List<AppointmentType>> GetAllAppointmentType();
-        Task<BookingAppointment> GetBookingsById(BookingAppointment bookingid);
-        Task<List<BookingAppointment>> GetBookingsByUserId(BookingAppointment patientid);
-        Task<List<BookingAppointment>> GetBookingsByDoctorId(BookingAppointment doctorid);
+        Task<List<AppointmentTypes>> GetAllAppointmentType();
+        Task<BookingAppointment> GetBookingsById(int bookingid);
+        Task<List<BookingAppointment>> GetBookingsByUserId(int patientid);
+        Task<List<BookingAppointment>> GetBookingsByDoctorId(int doctorid);
+
+         Task<List<AppointmentStatusRequest>> GetApStatus();
         Task<BookingAppointment> UpdateBooking(int id, BookingAppointment bookingid);
         void DeleteBooking(int id);
     }

@@ -12,14 +12,16 @@ namespace APSystem.Data.Repositories.BookingAppointment
          Task<List<UserModel>> CreateBooking(BookingsModel bookings);
          Task<List<AppointmentTypeModel>> GetAllApTypes();
 
-         Task<BookingsModel> GetBookingsById(BookingsModel bookingid);
+         Task<BookingsModel> GetBookingsById(int bookingid);
 
-         Task<List<BookingsModel>> GetBookingsByUserId(BookingsModel userid);
+         Task<List<BookingsModel>> GetBookingsByUserId(int userid);
 
-        Task<List<BookingsModel>> GetBookingsByDoctorId(BookingsModel userid);
+        Task<List<BookingsModel>> GetBookingsByDoctorId(int userid);
+
+         Task<List<AppointmentStatus>> GetApStatus();
 
          Task<BookingsDbEntity> UpdateBooking(int id,BookingsDbEntity bookingid);
 
-         Task<BookingsDbEntity> DeleteBooking(BookingsDbEntity deleteid);
+         Task<BookingsDbEntity> DeleteBooking(int deleteid);
     }
 }

@@ -28,6 +28,7 @@ public class AuthorizationMiddleware
 
         public async Task Invoke(HttpContext httpContext, IAuthService authService, IMetaDataService metaDataService)
         {
+            
             if (!_httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/api/v1/Auth") )
             {
 

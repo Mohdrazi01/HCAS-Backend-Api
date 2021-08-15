@@ -64,7 +64,6 @@ namespace APSystem.Data.Repositories.Auth
             }
             return await Task.FromResult(UsersbyId);
         }
-
         async Task<bool> IAuthRepository.UsersEmailConfirmation(string activationCode)
         {
             activationCode.ToUpper();
@@ -153,11 +152,10 @@ namespace APSystem.Data.Repositories.Auth
 
         async Task<UserModel> IAuthRepository.UpdateUserDetails(int id, UserModel User)
         {
-            var user = await _dbContext.ApUsers.SingleOrDefaultAsync(x => x.UserID == id);
+            var user = _dbContext.ApUsers.SingleOrDefault(x => x.UserID == id);
             if (user != null)
             {
                 user.Name = User.Name;
-                user.RoleID = User.RoleID;
                 user.Email = User.Email;
                 user.PhoneNumber = User.PhoneNumber;
                 user.DateOfBirth = User.DateOfBirth;
@@ -167,8 +165,8 @@ namespace APSystem.Data.Repositories.Auth
                 user.Experience = User.Experience;
                 user.Address = User.Address;
 
-                var updateduser = _dbContext.ApUsers.Update(user);
-                var result = _dbContext.SaveChanges();
+                var updateduser =  _dbContext.ApUsers.Update(user);
+                var result =  _dbContext.SaveChanges();
             }
             return await Task.FromResult(User);
         }

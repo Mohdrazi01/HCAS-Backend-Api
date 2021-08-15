@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using APSystem.Services.Appointment;
 using APSystem.Services.Bookings;
 using APSystem.Data.Repositories.BookingAppointment;
+using APSystem.Services.Sms;
+using Twilio.Clients;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace APSystem.Core.Configuration
 {
@@ -36,6 +40,9 @@ namespace APSystem.Core.Configuration
             // services.AddScoped(typeof(IRequestModelValidationRules<>), typeof(RequestModelValidationRules<>));
             // services.AddScoped(typeof(IRequestValidationService<>), typeof(RequestValidationService<>));
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
+             services.AddScoped(typeof(ISmsService), typeof(SmsService));
+          //   services.AddScoped(typeof(ITwilioRestClient), typeof(SmsService));
+            services.AddHttpClient<ITwilioRestClient, TwilioClient>();
             #endregion
 
         }

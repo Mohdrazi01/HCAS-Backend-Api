@@ -122,6 +122,7 @@ namespace APSystem.Services.Appointment
                 {
                     AppointmentID = ad.AppointmentID,
                     DoctorID = ad.DoctorID,
+                    Email = ad.Email,
                     AppointmentDate = ad.AppointmentDate,
                     AppointmentStartTime = ad.AppointmentStartTime,
                     AppointmentEndTime = ad.AppointmentEndTime

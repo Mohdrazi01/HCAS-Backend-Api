@@ -21,11 +21,12 @@ namespace APSystem.Core.Configuration
         {
             services.Configure<ConnectionSettings>(configuration.GetSection(DefaultConstants.ConnectionStrings));
             services.Configure<AppSettings>(configuration.GetSection(DefaultConstants.AppSettings));
+            services.Configure<SmsSettings>(configuration.GetSection(DefaultConstants.SmsSettings));
             services.Configure<EmailSettings>(configuration.GetSection(DefaultConstants.EmailSettings));
             services.Configure<JwtSettings>(configuration.GetSection(DefaultConstants.JwtSettings));
-            // services.AddIdentity<Microsoft.AspNetCore.Identity.IdentityUser, Microsoft.AspNetCore.Identity.IdentityRole>()
-            //  .AddEntityFrameworkStores<ApDbContext>()
-            // .AddDefaultTokenProviders();
+            services.AddIdentity<Microsoft.AspNetCore.Identity.IdentityUser, Microsoft.AspNetCore.Identity.IdentityRole>()
+              .AddEntityFrameworkStores<ApDbContext>()
+             .AddDefaultTokenProviders();
             services.AddDbContext<ApDbContext>(opts => opts.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             // services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             // services.AddScoped(typeof(IAuthRepository), typeof(AuthRepository));

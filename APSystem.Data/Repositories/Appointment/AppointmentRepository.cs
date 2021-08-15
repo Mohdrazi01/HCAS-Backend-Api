@@ -204,7 +204,7 @@ namespace APSystem.Data.Repositories.Appointment
         async void IAppointmentRepository.DeleteAppointment(int id)
         {
 
-            var deleteap = await _dbContext.Appointments.FindAsync(id);
+            var deleteap = _dbContext.Appointments.Find(id);
             if (deleteap != null)
             {
                 _dbContext.Appointments.Remove(deleteap);

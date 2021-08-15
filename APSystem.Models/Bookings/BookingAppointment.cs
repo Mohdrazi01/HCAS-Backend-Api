@@ -7,8 +7,10 @@ namespace APSystem.Models.Bookings
         public int BookingID { get; set; }
         public int? PatientID { get; set; }
         public string PatientName { get; set; }
+        public string PatientEmail { get; set; }
         public int? DoctorID { get; set; }
         public string DoctorName { get; set; }
+        public string DoctorEmail { get; set; }
         public int? AppointmentID { get; set; }
         public DateTime? AppointmentDate { get; set; }
         public string AppointmentStartTime { get; set; }

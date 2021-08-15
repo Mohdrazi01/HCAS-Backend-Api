@@ -195,15 +195,11 @@ namespace APSystem.Services.Auth
             UserDetailsResponse userresp = new UserDetailsResponse();
             UserModel updateUser = new UserModel()
             {
-                UserID = userbyid.UserID,
                 Name = userbyid.Name,
-                RoleID = userbyid.RoleID,
-                RoleName = userbyid.RoleName,
                 Email = userbyid.Email,
                 PhoneNumber = userbyid.PhoneNumber,
                 DateOfBirth = userbyid.DateOfBirth,
                 Gender = userbyid.Gender,
-                GenderName = userbyid.GenderName,
                 GMCNumber = userbyid.GMCNumber,
                 Speciality = userbyid.Speciality,
                 Experience = userbyid.Experience,

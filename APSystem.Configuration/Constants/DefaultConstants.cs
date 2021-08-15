@@ -11,6 +11,7 @@ namespace APSystem.Configuration.Constants
          public const string DefaultConnection = nameof(DefaultConstants.DefaultConnection);
          public const string ConnectionStrings = nameof(DefaultConstants.ConnectionStrings);
          public const string AppSettings = nameof(DefaultConstants.AppSettings);
+          public const string SmsSettings = nameof(DefaultConstants.SmsSettings);
          public const string EmailSettings = nameof(DefaultConstants.EmailSettings);
          public const string JwtSettings = nameof(DefaultConstants.JwtSettings);
     }

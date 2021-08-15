@@ -6,6 +6,7 @@ using APSystem.Services.Bookings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+
 namespace APSystem.Core.Controllers.Bookings
 {
     [Route("api/v1/Booking")]
@@ -33,28 +34,28 @@ namespace APSystem.Core.Controllers.Bookings
         }
 
         [HttpGet("GetBookingsbyUserId")]
-        public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyUser([FromBody] BookingAppointment bookingbyUserid)
+        public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyUser(int bookingbyUserid)
         {
             var bookings = await _bookingsService.GetBookingsByUserId(bookingbyUserid);
             return bookings;
         }
 
         [HttpGet("GetBookingsbyDoctorId")]
-        public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyDoctorId([FromBody] BookingAppointment bookingbyDoctorid)
+        public async Task<ActionResult<List<BookingAppointment>>> GetBookingsbyDoctorId(int id)
         {
-            var bookings = await _bookingsService.GetBookingsByDoctorId(bookingbyDoctorid);
+            var bookings = await _bookingsService.GetBookingsByDoctorId(id);
             return bookings;
         }
 
         [HttpGet("GetBookingsbyId")]
-        public async Task<ActionResult<BookingAppointment>> GetBookingsbyID([FromBody] BookingAppointment bookingbyid)
+        public async Task<ActionResult<BookingAppointment>> GetBookingsbyID(int id)
         {
-            var bookings = await _bookingsService.GetBookingsById(bookingbyid);
+            var bookings = await _bookingsService.GetBookingsById(id);
             return bookings;
         }
 
         [HttpPut("UpdateBooking")]
-        public async Task<ActionResult<BookingAppointment>> UpdateBooking([FromQuery] int id, BookingAppointment updateBooking)
+        public async Task<ActionResult<BookingAppointment>> UpdateBooking(int id, BookingAppointment updateBooking)
         {
             var bookings = await _bookingsService.UpdateBooking(id, updateBooking);
             return bookings;
@@ -67,10 +68,16 @@ namespace APSystem.Core.Controllers.Bookings
             return Ok();
         }
         [HttpGet("GetAppointmentTypes")]
-        public async Task<ActionResult<List<AppointmentType>>> GetAllAppointmentTypes(){
+        public async Task<ActionResult<List<AppointmentTypes>>> GetAllAppointmentTypes(){
 
            var AppointemntTypes =  _bookingsService.GetAllAppointmentType();
            return await AppointemntTypes;
+        }
+
+        [HttpGet("GetAppointmentStatus")]
+        public async Task<ActionResult<List<AppointmentStatusRequest>>> GetAppointmentStatus(){
+           var AppointemntStatus =  _bookingsService.GetApStatus();
+           return await AppointemntStatus;
         }
 
     }

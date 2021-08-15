@@ -9,21 +9,28 @@ using APSystem.Data.Repositories.BookingAppointment;
 using APSystem.Models.Appointment;
 using APSystem.Models.Bookings;
 using APSystem.Models.Email;
+using APSystem.Models.Sms;
 using APSystem.Services.Email;
+using APSystem.Services.Sms;
 using Microsoft.AspNetCore.Hosting;
 
 namespace APSystem.Services.Bookings
 {
     public class BookingService : IBookingsService
     {
+        private readonly ISmsService _smsService;
         private IBookingsRepository _bookingRepository;
         private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public BookingService(IBookingsRepository bookingRepository, IEmailService emailService, IWebHostEnvironment hostingEnvironment)
+        public BookingService(IBookingsRepository bookingRepository
+        , IEmailService emailService
+        , IWebHostEnvironment hostingEnvironment
+        ,ISmsService smsService)
         {
             _bookingRepository = bookingRepository;
             _emailService = emailService;
             _hostingEnvironment = hostingEnvironment;
+            _smsService = smsService;
         }
         async Task<List<BookingAppointment>> IBookingsService.GetAllBookings()
         {
@@ -64,25 +71,28 @@ namespace APSystem.Services.Bookings
                 PhoneNumber = cresteBooking.PhoneNumber,
                 ProblemDiscription = cresteBooking.ProblemDiscription,
             };
-            var create = await _bookingRepository.CreateBooking(bookingtodb);
-            if(create != null){
-                foreach(UserModel u in create){
-                    if (u.RoleID == 2){
-                       await SendDoctorEmail(u.Email);
-                    }
-                    else if ( u.RoleID == 1 || u.RoleID == 4 || u.RoleID == 2 || u.RoleID == 3 ){
-                       await SendPatientEmail(u.Email);
-                    }
-                };
-            }
+            var create = _bookingRepository.CreateBooking(bookingtodb);
+           // await SengSms(cresteBooking.PhoneNumber);
+            await SendBookingEmail(cresteBooking.DoctorEmail, cresteBooking.PatientEmail);
             return await Task.FromResult(cresteBooking);
         }
 
-        public async Task SendDoctorEmail(string doctorEmail)
+        public async Task SengSms(string PhoneNumber)
+        { SmsRequest sms = new SmsRequest(){
+            To = PhoneNumber,
+            From = "(240) 392-6894",
+            Message = "Your booking was suffessful, Thank you From HCAS"
+            };
+            await _smsService.SendSmsAsync(sms);
+        }
+
+
+        public async Task SendBookingEmail(string doctorEmail, string patientEmail)
         {
+            await SendPatientEmail(patientEmail);
             string mailBody = string.Empty;
-            var fileStream = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/doctor-new-booking.html"), FileMode.Open, FileAccess.Read);
-            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+            var fileStreamDoctor = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/doctor-new-booking.html"), FileMode.Open, FileAccess.Read);
+            using (var streamReader = new StreamReader(fileStreamDoctor, Encoding.UTF8))
             {
                 mailBody = streamReader.ReadToEnd();
             }
@@ -99,8 +109,8 @@ namespace APSystem.Services.Bookings
         public async Task SendPatientEmail(string patientEmail)
         {
             string mailBody = string.Empty;
-            var fileStream = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/patient-new-booking.html"), FileMode.Open, FileAccess.Read);
-            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+            var fileStreamPatient = new FileStream(Path.Combine(_hostingEnvironment.ContentRootPath, "EmailContent/patient-new-booking.html"), FileMode.Open, FileAccess.Read);
+            using (var streamReader = new StreamReader(fileStreamPatient, Encoding.UTF8))
             {
                 mailBody = streamReader.ReadToEnd();
             }
@@ -108,7 +118,7 @@ namespace APSystem.Services.Bookings
             emails.Add(patientEmail);
             EmailRequest emailRequest = new EmailRequest(
                          emails,
-                         $"Appointment Bookikng Email",
+                         $"Appointment Booking Email",
                         mailBody,
                          null
                      );
@@ -116,13 +126,9 @@ namespace APSystem.Services.Bookings
         }
 
 
-        async Task<BookingAppointment> IBookingsService.GetBookingsById(BookingAppointment bookingid)
+        async Task<BookingAppointment> IBookingsService.GetBookingsById(int bookingid)
         {
-            BookingsModel bookingsbyid = new BookingsModel()
-            {
-                BookingID = bookingid.BookingID
-            };
-            var ba = await _bookingRepository.GetBookingsById(bookingsbyid);
+            var ba = await _bookingRepository.GetBookingsById(bookingid);
             var bookingappointment = new BookingAppointment()
             {
                 BookingID = ba.BookingID,
@@ -144,17 +150,12 @@ namespace APSystem.Services.Bookings
             return await Task.FromResult(bookingappointment);
         }
 
-        async Task<List<BookingAppointment>> IBookingsService.GetBookingsByUserId(BookingAppointment userid)
+        async Task<List<BookingAppointment>> IBookingsService.GetBookingsByUserId(int userid)
         {
             var bookingappointment = new List<BookingAppointment>();
-            BookingsModel bookingsbyuserid = new BookingsModel()
-            {
-                PatientID = userid.PatientID
-            };
-            var booking = await _bookingRepository.GetBookingsByUserId(bookingsbyuserid);
+            var booking = await _bookingRepository.GetBookingsByUserId(userid);
             foreach (BookingsModel ba in booking)
             {
-
                 bookingappointment.Add(new BookingAppointment()
                 {
                     BookingID = ba.BookingID,
@@ -177,14 +178,10 @@ namespace APSystem.Services.Bookings
             return await Task.FromResult(bookingappointment);
         }
 
-        async Task<List<BookingAppointment>> IBookingsService.GetBookingsByDoctorId(BookingAppointment doctorid)
+        async Task<List<BookingAppointment>> IBookingsService.GetBookingsByDoctorId(int doctorid)
         {
             var bookingappointment = new List<BookingAppointment>();
-            BookingsModel bookingsbyuserid = new BookingsModel()
-            {
-                DoctorID = doctorid.DoctorID
-            };
-            var booking = await _bookingRepository.GetBookingsByUserId(bookingsbyuserid);
+            var booking = await _bookingRepository.GetBookingsByDoctorId(doctorid);
             foreach (BookingsModel ba in booking)
             {
 
@@ -212,10 +209,19 @@ namespace APSystem.Services.Bookings
 
         async Task<BookingAppointment> IBookingsService.UpdateBooking(int id, BookingAppointment bookingid)
         {
+             string problem = "";
+            if (bookingid.StatusID == 1)
+            {
+                problem = (bookingid.ProblemDiscription + " Updated on:" + DateTime.Now).ToString();
+            }else{
+             problem = bookingid.ProblemDiscription;
+            }
             BookingsDbEntity updatebooking = new BookingsDbEntity()
             {
+                BookingID = bookingid.BookingID,
                 AppointmentID = bookingid.AppointmentID,
-                ProblemDiscription = bookingid.ProblemDiscription,
+                PhoneNumber = bookingid.PhoneNumber,
+                ProblemDiscription = problem,
                 StatusID = bookingid.StatusID
             };
             var upbooking = await _bookingRepository.UpdateBooking(id, updatebooking);
@@ -224,24 +230,38 @@ namespace APSystem.Services.Bookings
         }
         async void IBookingsService.DeleteBooking(int id)
         {
-            BookingsDbEntity deletebyid = new BookingsDbEntity()
-            {
-                BookingID = id
-            };
-            await _bookingRepository.DeleteBooking(deletebyid);
+            await _bookingRepository.DeleteBooking(id);
         }
 
-        async Task<List<AppointmentType>> IBookingsService.GetAllAppointmentType()
+        async Task<List<AppointmentTypes>> IBookingsService.GetAllAppointmentType()
         {
-           List<AppointmentType> AptypesSrvice = new List<AppointmentType>();
-           var Aptypes = await _bookingRepository.GetAllApTypes();
-            foreach(var Ap in Aptypes){
-                AptypesSrvice.Add(new AppointmentType{
+            List<AppointmentTypes> AptypesSrvice = new List<AppointmentTypes>();
+            var Aptypes = await _bookingRepository.GetAllApTypes();
+            foreach (var Ap in Aptypes)
+            {
+                AptypesSrvice.Add(new AppointmentTypes
+                {
                     AppointmentTypeID = Ap.AppointmentTypeID,
-                    AppointmentTypes = Ap.AppointmentTypes
+                    AppointmentType = Ap.AppointmentType
                 });
             }
             return await Task.FromResult(AptypesSrvice);
+        }
+
+        async Task<List<AppointmentStatusRequest>> IBookingsService.GetApStatus()
+        {
+            List<AppointmentStatusRequest> apstatusreq = new List<AppointmentStatusRequest>();
+            var status = await _bookingRepository.GetApStatus();
+            foreach (var ap in status)
+            {
+                apstatusreq.Add(new AppointmentStatusRequest
+                {
+                    ApStatusID = ap.ApStatusID,
+                    ApStatus = ap.ApStatus
+                });
+            }
+            return await Task.FromResult(apstatusreq);
+
         }
     }
 }
