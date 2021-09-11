@@ -1,10 +1,12 @@
 using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace APSystem.Core.Configuration
 {
     
-    public class ConfigureFordwardHeaderOptions 
+    public static class ConfigureFordwardHeaderOptions 
     {
        /// <summary>
        /// This 
@@ -12,6 +14,10 @@ namespace APSystem.Core.Configuration
        /// <value></value>
         public static void ConfigureService(IServiceCollection services)
         {
+             services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
         }
     }

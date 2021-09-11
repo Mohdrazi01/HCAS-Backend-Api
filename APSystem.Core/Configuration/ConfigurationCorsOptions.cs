@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace APSystem.Core.Configuration
 {
-    public class ConfigurationCorsOptions
+    public static class ConfigurationCorsOptions
     {
        /// <summary>
        /// This
@@ -12,7 +12,16 @@ namespace APSystem.Core.Configuration
        /// <value></value>
         public static void ConfigureService(IServiceCollection services)
         {
-
+            services.AddCors(options =>
+                        {
+                            options.AddPolicy("CorsPolicy",
+                            builder => builder.WithOrigins("http://localhost:4200","http://localhost:4300")
+                                            //.AllowAnyOrigin()
+                                            .AllowAnyMethod()
+                                            .AllowAnyHeader()
+                                            .AllowCredentials()
+                                            .Build());
+                        });
         }
     }
 }

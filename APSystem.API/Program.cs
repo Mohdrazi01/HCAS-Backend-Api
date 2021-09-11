@@ -23,7 +23,6 @@ namespace APSystem.API
                 {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<Startup>();
-                    
                 });
     }
 }

@@ -5,11 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+   <PackageReference Include="FluentValidation.AspNetCore" Version="9.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
+   <PackageReference Include="Microsoft.EntityFrameWorkCore.SqlServer" Version="3.1.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="Twilio" Version="5.65.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\APSystem.Configuration\APSystem.Configuration.csproj" />
+    <ProjectReference Include="..\APSystem.Services\APSystem.Services.csproj" />
+    <ProjectReference Include="..\APSystem.Models\APSystem.Models.csproj" />
   </ItemGroup>
 
 </Project>
